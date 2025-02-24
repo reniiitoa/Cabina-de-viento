@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 
@@ -31,6 +32,11 @@ def allowed_file(filename):
 def home():
     espacios = Espacio.query.all()  # Obtener todos los espacios
     return render_template('index.html', espacios=espacios)
+
+# Ruta para servir archivos estáticos
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
 
 # Ruta para agregar o editar un espacio (con imagen)
 @app.route('/agregar', methods=['POST'])
@@ -74,3 +80,10 @@ def obtener_espacios():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+# Configuración para Vercel
+app.wsgi_app = ProxyFix(app.wsgi_app)
+
+# Vercel handler function
+def handler(event, context):
+    return app.wsgi_app
