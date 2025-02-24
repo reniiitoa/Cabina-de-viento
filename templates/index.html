@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Cabina de Viento</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Ruleta Cabina de Viento</h1>
+    
+    <div id="ruleta-container">
+    <div id="ruleta"></div>
+</div>
+
+    <button id="btnImpulsar">🎲 Impulsar</button>
+
+    <h2 id="ganador"></h2>
+
+    <h3>Agregar o Editar Espacio</h3>
+    <form action="/agregar" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id" id="espacioId">
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="file" name="imagen" required>
+        <button type="submit">Agregar o Editar</button>
+    </form>
+
+    <h3>Espacios Existentes:</h3>
+    <ul id="espacios-list">
+        {% for espacio in espacios %}
+            <li>
+                <img src="{{ url_for('static', filename='uploads/' + espacio.imagen) }}" alt="{{ espacio.nombre }}" width="50" height="50">
+                <span>{{ espacio.nombre }}</span>
+                <form action="/eliminar/{{ espacio.id }}" method="POST" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
